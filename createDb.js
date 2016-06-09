@@ -17,7 +17,7 @@ function requireModels(callback) {
 function createUsers(callback) {
     var users = [
         {username: 'Vasya', password: 'supervasya'},
-        {username: 'Vasya', password: 'superpetya'},
+        {username: 'Petya', password: 'superpetya'},
         {username: 'admin', password: 'superadmin'}
     ];
     async.each(users, (userData, callback)=> {
