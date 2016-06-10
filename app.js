@@ -1,12 +1,15 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var HttpError = require('error').HttpError;
-var routes = require('./routes/index');
-
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const HttpError = require('error').HttpError;
+const routes = require('./routes/index');
+const config = require('config');
+const session = require('express-session');
+const moongose = require('libs/mongoose');
+const MongoStore = require('connect-mongo')(session);
 
 var app = express();
 
@@ -20,6 +23,16 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+  secret: config.get('session:secret'),
+  key: config.get('session:key'),
+  cookie: config.get('session:cookie'),
+  store: new MongoStore({mongooseConnection: moongose.connection})
+}));
+app.use(function (req, res, next) {
+  req.session.numberOfVisits = req.session.numberOfVisits + 1 || 1;
+  res.send('Visits : ' + req.session.numberOfVisits)
+});
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(require('middleware/sendHttpError'));
 app.use('/', routes);
