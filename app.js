@@ -5,7 +5,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const HttpError = require('error').HttpError;
-const routes = require('./routes/index');
+const routes = require('./routes');
 const config = require('config');
 const session = require('express-session');
 const moongose = require('libs/mongoose');
@@ -29,13 +29,9 @@ app.use(session({
   cookie: config.get('session:cookie'),
   store: new MongoStore({mongooseConnection: moongose.connection})
 }));
-app.use(function (req, res, next) {
-  req.session.numberOfVisits = req.session.numberOfVisits + 1 || 1;
-  res.send('Visits : ' + req.session.numberOfVisits)
-});
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(require('middleware/sendHttpError'));
-app.use('/', routes);
+routes(app);
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
