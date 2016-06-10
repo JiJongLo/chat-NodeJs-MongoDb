@@ -19,7 +19,7 @@ router.get('/users/:id', function (req, res, next) {
     if (!user) {
       next(new HttpError(404, 'User not found'));
     }
-    res.json(user);
+    else res.json(user);
   });
 });
 module.exports = router;
